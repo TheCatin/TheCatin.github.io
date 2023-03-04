@@ -1,9 +1,9 @@
 [
  {
   "username": "TheCatin",
-  "name": Frank,
+  "name": null,
   "userimg": "https://avatars.githubusercontent.com/u/89053053?v=4",
-  "sort": "created",
+  "sort": "star",
   "order": "asc",
   "includeFork": false,
   "theme": "dark.css",
