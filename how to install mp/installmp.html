@@ -1,0 +1,133 @@
+<!DOCTYPE html><html lang="en"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>TheCatin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/magic-grid/dist/magic-grid.min.js"></script>
+    <link rel="stylesheet" href="installmp.css">
+  <link rel="icon" href="https://avatars.githubusercontent.com/u/89053053?v=4" type="image/png"></head>
+
+  <body>
+    <div id="loading">
+      <div id="spinner"></div>
+    </div>
+    <div id="display">
+      <div id="work">
+        <h1>How To Install The Multiplayer Mod</h1>
+        <div class="projects" id="work_section">
+    <section>
+        <div class="section_title">How Do I Install The Pizza Tower Multiplayer Mod?</div>
+        <div class="about_section">
+			<video width="100%" height="auto" controls>
+  <source src="how to install multiplayer mod.mp4" type="video/mp4">
+Your browser does not support the video tag.
+</video>
+            <span style="display:block;"><strong>This video was taken down and I was given a strike because supposedly it was showing people how to pirate, as you can see it was unjustful because I did no such thing. I suggest you use this video if you are having trouble installing it, as it shows the entire process. And NO! This mod does NOT work with pirated copies, so if you're legally getting an error it's because the mod is outdated, or you already have another mod installed</div>
+			<span style="display:block;"><br><div>
+			<span style="display:block;"><strong>DESCRIPTION LINKS!<br>The Mod - <a href="https://gamebanana.com/mods/429709" target="_blank">https://gamebanana.com/mods/429709</a><br>Xdelta UI - <a href="https://www.romhacking.net/utilities/598/" target="_blank">https://www.romhacking.net/utilities/598/</a><br>Remote Play Whatever - <a href="https://github.com/m4dEngi/RemotePlayWhatever" target="_blank">https://github.com/m4dEngi/RemotePlayWhatever</a><div>
+			<span style="display:block;"><br><div>
+			<span style="display:block;">STEP 1<br>Download the tools (listed above)<div>
+			<span style="display:block;"><br><div>
+			<span style="display:block;">STEP 2<br>Verify the files of Pizza Tower<div>
+			<span style="display:block;"><br><div>
+			<span style="display:block;">STEP 3<br>Open Xdelta UI, and set the patch file as the .xdelta file from the multiplayer mod (it's inside the zip)<div>
+			<span style="display:block;"><br><div>
+			<span style="display:block;">STEP 4<br>In Xdelta UI, set the source file to data.win inside your Pizza Tower install folder<div>
+			<span style="display:block;"><br><div>
+			<span style="display:block;">STEP 5<br>Set the output file as data.win, and save it SOMEWHERE BESIDES THE PIZZA TOWER INSTALL FOLDER<div>
+			<span style="display:block;"><br><div>
+			<span style="display:block;">STEP 6<br>Click patch<div>
+			<span style="display:block;"><br><div>
+			<span style="display:block;">STEP 7<br>Drag and drop the new data.win into the pizza tower install folder, and replace file when it asks<div>
+			<span style="display:block;"><br><div>
+			<span style="display:block;">STEP 8<br>If you plan on using a controller, set the controls with steam input (it's a community layout, make sure you have show all bindings on)<div>
+			<span style="display:block;"><br><div>
+			<span style="display:block;">STEP 9<br>If you don't have anyone next to you, use Remote Play Whatever to invite your friends to pizza tower<div>
+			<span style="display:block;"><br><div>
+			<span style="display:block;">STEP 10<br>Make sure your friend's controls are set as well<div>
+			<span style="display:block;"><br><div>
+			<span style="display:block;">STEP 11<br>Success<div>
+			<span style="display:block;"><br><div>
+        <div class="bottom_section">
+            <span style="display:inline-block;"><i class="fas fa-code"></i>&nbsp; Mega</span>
+            <span><i class="fas fa-star"></i>&nbsp; 4</span>
+        </div>
+    </section>
+      </div>
+      <div id="forks" style="display:none;">
+        <h1>Forks.</h1>
+        <div class="projects" id="forks_section"></div>
+      </div>
+      <div id="blog_section">
+        <h1>Blog.</h1>
+        <div id="blogs"></div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      setTimeout(function() {
+        document.getElementById("loading").classList.add("animated");
+        document.getElementById("loading").classList.add("fadeOut");
+        setTimeout(function() {
+          document.getElementById("loading").classList.remove("animated");
+          document.getElementById("loading").classList.remove("fadeOut");
+          document.getElementById("loading").style.display = "none";
+        }, 800);
+      }, 1500);
+      $.getJSON("blog.json", function(blog) {
+        blog = blog || [];
+        if (blog.length == 0) {
+          return (document.getElementById("blog_section").style.display =
+            "none");
+        }
+        for (var i = 0; i < blog.length; i++) {
+          $("#blogs").append(`
+            <a href="./blog/${blog[i].url_title}/" target="_blank">
+                <section>
+                    <img src="./blog/${blog[i].url_title}/${blog[i].top_image}">
+                    <div class="blog_container">
+                        <div class="section_title">${blog[i].title}</div>
+                        <div class="about_section">
+                            ${blog[i].sub_title}
+                        </div>
+                    </div>
+                </section>
+            </a>
+            `);
+        }
+      }).fail(function() {
+        return (document.getElementById("blog_section").style.display = "none");
+      });
+    </script>
+
+    <script>
+      const magicProjectsGrid = new MagicGrid({
+        container: "#work_section",
+        animate: false,
+        gutter: 30, // default gutter size
+        static: true,
+        useMin: false,
+        maxColumns: 2,
+        useTransform: true
+      });
+
+      const magicForksGrid = new MagicGrid({
+        container: "#forks_section",
+        animate: false,
+        gutter: 30, // default gutter size
+        static: true,
+        useMin: false,
+        maxColumns: 2,
+        useTransform: true
+      });
+
+      $("document").ready(() => {
+        magicProjectsGrid.listen();
+        magicForksGrid.listen();
+      });
+    </script>
+  
+
+</body></html>
