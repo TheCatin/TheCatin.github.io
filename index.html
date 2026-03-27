@@ -1,229 +1,446 @@
-<!DOCTYPE html><html lang="en"><head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>TheCatin</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
-    <script src="https://unpkg.com/magic-grid/dist/magic-grid.min.js"></script>
-    <link rel="stylesheet" href="index.css">
-  <link rel="icon" href="https://avatars.githubusercontent.com/u/89053053?v=4" type="image/png"></head>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Catin Website</title>
+  <link rel="icon" href="images/pfp.jpg" type="image/png">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;600&display=swap" rel="stylesheet" />
+  <style>
+    /* ============================================================
+       CSS VARIABLES — tweak these to restyle the whole site
+    ============================================================ */
+    :root {
+      --bg-overlay:   rgba(0, 0, 0, 0.45);   /* darkness over video */
+      --accent:       #f5c518;                /* yellow highlight */
+      --tab-bg:       rgba(30, 30, 30, 0.82);
+      --tab-hover-bg: rgba(50, 50, 50, 0.95);
+      --tab-active-bg:#222;
+      --tab-border:   3px solid var(--accent);
+      --btn-bg:       rgba(30, 30, 30, 0.88);
+      --btn-border:   3px solid #ccc;
+      --text-title:   #ffffff;
+      --text-body:    rgba(255,255,255,0.85);
+      --text-nav:     #ffffff;
+      --font-title:   'Bebas Neue', sans-serif;
+      --font-body:    'Barlow', sans-serif;
+      --tab-width:    200px;       /* collapsed width of right tabs */
+      --tab-pop:      60px;        /* how far they slide out on hover */
+      --transition:   0.35s cubic-bezier(.4,0,.2,1);
+    }
 
-  <body>
-    <div id="loading">
-      <div id="spinner"></div>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      width: 100%; height: 100%;
+      overflow: hidden;
+      font-family: var(--font-body);
+      color: var(--text-body);
+    }
+
+    /* ============================================================
+       VIDEO BACKGROUND
+    ============================================================ */
+    #bg-container {
+      position: fixed; inset: 0; z-index: 0;
+      overflow: hidden;
+      background: #111;
+    }
+    #bg-container::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: var(--bg-overlay);
+      pointer-events: none;
+      z-index: 1;
+    }
+    #yt-player {
+      position: absolute;
+      /* oversized so the 16:9 iframe fills any viewport */
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 177.78vh;   /* 16/9 * 100vh */
+      height: 56.25vw;   /* 9/16 * 100vw */
+      min-width: 100%;
+      min-height: 100%;
+      pointer-events: none;
+    }
+
+    /* ============================================================
+       LAYOUT SHELL
+    ============================================================ */
+    #app {
+      position: relative; z-index: 2;
+      width: 100%; height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ============================================================
+       TOP NAV
+    ============================================================ */
+    #top-nav {
+      width: 100%;
+      display: flex;
+      justify-content: space-evenly;
+      align-items: flex-start;
+      padding: 0 2vw;
+      flex-shrink: 0;
+    }
+    .nav-tab {
+      position: relative;
+      background: rgba(30, 30, 30, 0.75);
+      color: var(--text-nav);
+      font-family: var(--font-body);
+      font-size: clamp(0.85rem, 1.4vw, 1.1rem);
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 10px 28px 12px;
+      cursor: pointer;
+      border: none; outline: none;
+      clip-path: polygon(0 0, 100% 0, 92% 100%, 8% 100%);
+      transition: background var(--transition), color var(--transition);
+      white-space: nowrap;
+    }
+    .nav-tab::after {
+      content: '';
+      position: absolute; bottom: 0; left: 8%; right: 8%;
+      height: 2px;
+      background: var(--accent);
+      transform: scaleX(0);
+      transform-origin: center;
+      transition: transform var(--transition);
+    }
+    .nav-tab:hover {
+      background: rgba(60, 60, 60, 0.92);
+      color: var(--accent);
+    }
+    .nav-tab:hover::after { transform: scaleX(1); }
+
+    /* ============================================================
+       MAIN CONTENT AREA
+    ============================================================ */
+    #main {
+      flex: 1;
+      display: flex;
+      align-items: stretch;
+      overflow: hidden;
+    }
+
+    /* Left content */
+    #content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: clamp(20px, 4vw, 60px) clamp(20px, 5vw, 80px);
+      padding-right: calc(var(--tab-width) + 20px); /* avoid overlap with right tabs */
+    }
+
+    #title {
+      font-family: var(--font-title);
+      font-size: clamp(2.5rem, 8vw, 7rem);
+      color: var(--text-title);
+      line-height: 0.95;
+      letter-spacing: 0.02em;
+      text-shadow: 3px 3px 0 rgba(0,0,0,0.5), 6px 6px 0 rgba(0,0,0,0.2);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+      margin-bottom: clamp(10px, 2vh, 20px);
+    }
+
+    #description {
+      font-size: clamp(0.8rem, 1.3vw, 1rem);
+      font-weight: 300;
+      line-height: 1.65;
+      max-width: 420px;
+      color: var(--text-body);
+      text-shadow: 1px 1px 4px rgba(0,0,0,0.8);
+      transition: opacity 0.4s ease;
+      margin-bottom: clamp(16px, 3vh, 32px);
+    }
+
+    #cta-btn {
+      display: inline-block;
+      background: var(--btn-bg);
+      color: #fff;
+      font-family: var(--font-title);
+      font-size: clamp(1.2rem, 2.5vw, 1.8rem);
+      letter-spacing: 0.08em;
+      padding: 12px 36px;
+      border: var(--btn-border);
+      cursor: pointer;
+      text-decoration: none;
+      transition: background var(--transition), border-color var(--transition),
+                  color var(--transition), transform 0.15s ease;
+      align-self: flex-start;
+      clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
+    }
+    #cta-btn:hover {
+      background: rgba(245, 197, 24, 0.2);
+      border-color: var(--accent);
+      color: var(--accent);
+      transform: translateX(4px);
+    }
+
+    /* ============================================================
+       RIGHT MOD TABS
+    ============================================================ */
+    #mod-tabs {
+      position: absolute;
+      right: 0; top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 8px;
+      padding: 10px 0;
+    }
+
+    .mod-tab {
+      position: relative;
+      width: calc(var(--tab-width) + var(--tab-pop));
+      transform: translateX(var(--tab-pop));   /* mostly hidden off-screen right */
+      transition: transform var(--transition), background var(--transition);
+      cursor: pointer;
+    }
+    .mod-tab:hover,
+    .mod-tab.active {
+      transform: translateX(0);
+    }
+    .mod-tab-inner {
+      background: var(--tab-bg);
+      color: #fff;
+      font-family: var(--font-body);
+      font-size: clamp(0.8rem, 1.2vw, 0.95rem);
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 12px 20px 12px 28px;
+      border-left: var(--tab-border);
+      clip-path: polygon(12px 0, 100% 0, 100% 100%, 0 100%);
+      transition: background var(--transition), color var(--transition);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .mod-tab:hover .mod-tab-inner,
+    .mod-tab.active .mod-tab-inner {
+      background: var(--tab-active-bg);
+      color: var(--accent);
+    }
+    /* little arrow indicator on active */
+    .mod-tab.active .mod-tab-inner::before {
+      content: '▶ ';
+      color: var(--accent);
+    }
+
+    /* ============================================================
+       CONTENT TRANSITION HELPER
+    ============================================================ */
+    .fade-out { opacity: 0; transform: translateY(8px); }
+    .fade-in  { opacity: 1; transform: translateY(0); }
+
+    /* ============================================================
+       RESPONSIVE ADJUSTMENTS
+    ============================================================ */
+    @media (max-width: 700px) {
+      :root {
+        --tab-width: 150px;
+        --tab-pop:   40px;
+      }
+      #content { padding-right: calc(var(--tab-width) + 10px); }
+      .nav-tab { padding: 8px 14px 10px; font-size: 0.75rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ============================================================
+     ✏️  CONFIGURATION — edit everything here
+============================================================ -->
+<script>
+/* ----------------------------------------------------------------
+   TOP NAV TABS
+   Add objects to add more buttons.
+   { label: "Name", href: "url or #" }
+---------------------------------------------------------------- */
+const NAV_TABS = [
+  { label: "Projects", href: "#" },
+  { label: "Photography", href: "pages/photography.html" },
+  { label: "Others", href: "#" },
+];
+
+/* ----------------------------------------------------------------
+   MOD ENTRIES
+   Each mod changes the whole page when clicked.
+   activeIndex: which mod is shown on load (0 = first).
+
+   Fields:
+     label       — name shown on the right tab
+     videoId     — YouTube video ID for the background
+     title       — big title text
+     description — body text (supports \n for line breaks)
+     btnLabel    — text on the CTA button
+     btnUrl      — URL the CTA button links to
+---------------------------------------------------------------- */
+const MODS = [
+  {
+    label: "PT Multiplayer Mod",
+    videoId: "DC9HtXHADHA",   // ← replace with your YouTube video ID
+    title: "Pizza Tower Multiplayer",
+    description: "#1 most downloaded Pizza Tower mod in 2023 \n(It's first and most popular year on the market)\n\nIt's obsolete now, just wanted to flex it again.",
+    btnLabel: "Mod Page",
+    btnUrl: "https://gamebanana.com/mods/429709",
+  },
+  {
+    label: "Slurpzon Balatro",
+    videoId: "9agt18c_V1U",   // ← replace
+    title: "Slurpzon Balatro",
+    description: "Inside joke(r)s that you will never understand.\n 22 more jokers and counting.\n\nDo you dare play poker with Slurpzon?",
+    btnLabel: "Mod Page",
+    btnUrl: "https://thecatin.github.io/SlurpzonBalatroMod/",
+  },
+  {
+    label: "DrGBase Reeker",
+    videoId: "bLiR_bLXuXY",   // ← replace
+    title: "DrGBase Reeker",
+    description: "A reeker from the Scape and Run: Parasites mod,\nnow in Garry's Mod. It even comes in a pale flavor.\n\nWith no eyes it still sees you.",
+    btnLabel: "Mod Page",
+    btnUrl: "https://steamcommunity.com/sharedfiles/filedetails/?id=2836777289",
+  },
+  {
+    label: "Skywire Stage",
+    videoId: "qjccNvj5dpI",   // ← replace
+    title: "Skywire Stage",
+    description: "A Rivals Of Aether stage based off of Skywire 2\nGet ready to kick some ass in this deadly amusement park.\n\nCan you catch the references in the beans?",
+    btnLabel: "Mod Page",
+    btnUrl: "https://steamcommunity.com/sharedfiles/filedetails/?id=2709502270",
+  },
+];
+
+const CONFIG = {
+  activeIndex: 1,    // which mod tab is active on load
+  siteTitle: "The King of Slurpzon",   // browser tab title
+};
+</script>
+<!-- ============================================================
+     END OF CONFIGURATION
+============================================================ -->
+
+<!-- VIDEO BACKGROUND -->
+<div id="bg-container">
+  <iframe
+    id="yt-player"
+    frameborder="0"
+    allow="autoplay; encrypted-media"
+    allowfullscreen
+  ></iframe>
+</div>
+
+<!-- APP SHELL -->
+<div id="app">
+  <!-- TOP NAV -->
+  <nav id="top-nav"></nav>
+
+  <!-- MAIN -->
+  <div id="main" style="position:relative;">
+    <!-- LEFT CONTENT -->
+    <div id="content">
+      <h1 id="title"></h1>
+      <p  id="description"></p>
+      <a  id="cta-btn" href="#" target="_blank" rel="noopener"></a>
     </div>
-    <div id="profile">
-      <div id="profile_img" style="background: url(https://avatars.githubusercontent.com/u/89053053?v=4) center;"></div>
-      <div id="username"><span style="display:none;">null</span><a href="https://www.youtube.com/@TheCatinStashin">TheCatin</a></div>
-      <div id="userbio" style="display: block;">Discord is TheCatin, feel free to message me if you have any questions, and I mean message me, don't just send a friend request.</div>
-      <div id="about">
-                <span style="display:none;"><i class="fas fa-users"></i> &nbsp; null</span>
-                <span style="display:none;"><i class="fas fa-envelope"></i> &nbsp; null</span>
-                <span style="display:none;"><i class="fas fa-link"></i> &nbsp; <a href=""></a></span>
-                <span style="display:none;"><i class="fas fa-map-marker-alt"></i> &nbsp;&nbsp; null</span>
-                <span style="display:none;"><i class="fas fa-user-tie"></i> &nbsp;&nbsp; Available for hire</span>
-                <div class="socials">
-                <span style="display:none !important;"><a href="https://www.twitter.com/null" target="_blank" class="socials"><i class="fab fa-twitter"></i></a></span>
-                <span style="display:none !important;"><a href="https://www.dribbble.com/null" target="_blank" class="socials"><i class="fab fa-dribbble"></i></a></span>
-                <span style="display:none !important;"><a href="https://www.linkedin.com/in/null/" target="_blank" class="socials"><i class="fab fa-linkedin-in"></i></a></span>
-                <span style="display:none !important;"><a href="https://www.medium.com/@null/" target="_blank" class="socials"><i class="fab fa-medium-m"></i></a></span>
-                </div>
-                </div>
-    </div>
-    <div id="display">
-      <div id="work">
-        <h1>The fruits of my labor</h1>
-        <div class="projects" id="work_section">
-		<a href="how to install mp\installmp.html" target="_blank">
-    <section>
-        <div class="section_title">How Do I Install The Pizza Tower Multiplayer Mod?</div>
-        <div class="about_section">
-            <img src="images/installtut.png" width="100%" height="auto">
-            <span style="display:block;">This video was unjustly taken down and I was given a strike</div>
-        <div class="bottom_section">
-            <span style="display:inline-block;"><i class="fas fa-code"></i>&nbsp; Page</span>
-        </div>
-    </section>
 
-   <a href="https://gamebanana.com/mods/429709" target="_blank">
-                          <section>
-                              <div class="section_title">The Pizza Tower Multiplayer Mod</div>
-                              <div class="about_section">
-							  <img src="images/gamebanana icon.png" width="100%" height="auto">
-                              <span style="display:block;">Download the #1 most downloaded PT mod here!</span>
-                              </div>
-                              <div class="bottom_section">
-                                  <span style="display:inline-block;"><i class="fas fa-code"></i>&nbsp; GameBanana</span>
-                              </div>
-                          </section>
+    <!-- RIGHT MOD TABS -->
+    <div id="mod-tabs"></div>
+  </div>
+</div>
 
+<script>
+/* ============================================================
+   BOOTSTRAP
+============================================================ */
+document.title = CONFIG.siteTitle;
 
-							   <a href="https://steamcommunity.com/sharedfiles/filedetails/?id=2836777289" target="_blank">
-                            <section>
-                                <div class="section_title">Reeker Addon for Garry's Mod</div>
-                                <div class="about_section">
-								<img src="images/drgreeker.png" width="100%" height="auto">
-                                <span style="display:block;">The reeker from 'Scape and Run: Parasites' is now in gmod thanks to yours truely</span>
-                                </div>
-                                <div class="bottom_section">
-                                    <span style="display:inline-block;"><i class="fas fa-code"></i>&nbsp; Steam</span>
-                                </div>
-                            </section>
-							   <a href="https://mod.io/g/bonelab/m/dm-top-of-the-pizza-tower-fusion-support1" target="_blank">
-                            <section>
-                                <div class="section_title">DM_Top of the Pizza Tower Map</div>
-                                <div class="about_section">
-								<img src="images/dmpizzatower.png" width="100%" height="auto">
-                                <span style="display:block;">Fusion deathmatch map for Bonelab</span>
-                                </div>
-                                <div class="bottom_section">
-                                    <span style="display:inline-block;"><i class="fas fa-code"></i>&nbsp; Mod.io</span>
-                                </div>
-                            </section>
-							   <a href="https://mod.io/g/bonelab/m/working-helmet-light-safety-steve" target="_blank">
-                            <section>
-                                <div class="section_title">Safety Steve Avatar</div>
-                                <div class="about_section">
-								<img src="images/safetysteve.png" width="100%" height="auto">
-                                <span style="display:block;">Safety Steve from SLZ's upcoming game 'Hall of the Machine King' in Bonelab</span>
-                                </div>
-                                <div class="bottom_section">
-                                    <span style="display:inline-block;"><i class="fas fa-code"></i>&nbsp; Mod.io</span>
-                                </div>
-                            </section>
-							<a href="https://youtu.be/kHJXRE1Z2Aw" target="_blank">
-                            <section>
-                                <div class="section_title">hotmk ending leak?!!?</div>
-                                <div class="about_section">
-								<img src="images/mfwsteve.png" width="100%" height="auto">
-                                <span style="display:block;">waltuh</span>
-                                </div>
-                                <div class="bottom_section">
-                                    <span style="display:inline-block;"><i class="fas fa-code"></i>&nbsp; Youtube</span>
-                                </div>
-                            </section>
-							   <a href="https://steamcommunity.com/sharedfiles/filedetails/?id=2810613163" target="_blank">
-                            <section>
-                                <div class="section_title">Rupter Buddy</div>
-                                <div class="about_section">
-								<img src="images/rupterbuddy.png" width="100%" height="auto">
-                                <span style="display:block;">The rupter from 'Scape and Run: Parasites' is now in Rivals Of Aether</span>
-                                </div>
-                                <div class="bottom_section">
-                                    <span style="display:inline-block;"><i class="fas fa-code"></i>&nbsp; Steam</span>
-                                </div>
-                            </section>
-							<a href="https://steamcommunity.com/sharedfiles/filedetails/?id=2709502270" target="_blank">
-                            <section>
-                                <div class="section_title">Skywire Stage</div>
-                                <div class="about_section">
-								<img src="images/skywirestage.png" width="100%" height="auto">
-                                <span style="display:block;">Rivals Of Aether stage based on the Skywire flash games</span>
-                                </div>
-                                <div class="bottom_section">
-                                    <span style="display:inline-block;"><i class="fas fa-code"></i>&nbsp; Steam</span>
-                                </div>
-                            </section>
-   <a href="https://youtu.be/_LE4BF3Jdx0" target="_blank">
-                            <section>
-                                <div class="section_title">Pizza Tower Multiplayer Mod Release Video</div>
-                                <div class="about_section">
-								<img src="images/ogmpvidthumb.png" width="100%" height="auto">
-                                <span style="display:block;">A video showcasing the new multiplyayer mod to the world</span>
-                                </div>
-                                <div class="bottom_section">
-                                    <span style="display:inline-block;"><i class="fas fa-code"></i>&nbsp; Youtube</span>
-                                </div>
-                            </section>
-	   <a href="https://youtu.be/DC9HtXHADHA" target="_blank">
-                          <section>
-                              <div class="section_title">Pizza Tower Multiplayer Mod Pogo Mode Video</div>
-                              <div class="about_section">
-							  <img src="images/pogomode thumbnail.png" width="100%" height="auto">
-                              <span style="display:block;">A video for the release of a major multiplyaer update</span>
-                              </div>
-                              <div class="bottom_section">
-                                  <span style="display:inline-block;"><i class="fas fa-code"></i>&nbsp; Youtube</span>
-                              </div>
-                          </section>
-                            </a></div>
-      </div>
-      <div id="forks" style="display:none;">
-        <h1>Forks.</h1>
-        <div class="projects" id="forks_section"></div>
-      </div>
-      <div id="blog_section">
-        <h1>Blog.</h1>
-        <div id="blogs"></div>
-      </div>
-      <div id="footer">
-        <a href="https://github.com/imfunniee" target="_blank">made on earth by a human</a>
-      </div>
-    </div>
-    <script type="text/javascript">
-      setTimeout(function() {
-        document.getElementById("loading").classList.add("animated");
-        document.getElementById("loading").classList.add("fadeOut");
-        setTimeout(function() {
-          document.getElementById("loading").classList.remove("animated");
-          document.getElementById("loading").classList.remove("fadeOut");
-          document.getElementById("loading").style.display = "none";
-        }, 800);
-      }, 1500);
-      $.getJSON("blog.json", function(blog) {
-        blog = blog || [];
-        if (blog.length == 0) {
-          return (document.getElementById("blog_section").style.display =
-            "none");
-        }
-        for (var i = 0; i < blog.length; i++) {
-          $("#blogs").append(`
-            <a href="./blog/${blog[i].url_title}/" target="_blank">
-                <section>
-                    <img src="./blog/${blog[i].url_title}/${blog[i].top_image}">
-                    <div class="blog_container">
-                        <div class="section_title">${blog[i].title}</div>
-                        <div class="about_section">
-                            ${blog[i].sub_title}
-                        </div>
-                    </div>
-                </section>
-            </a>
-            `);
-        }
-      }).fail(function() {
-        return (document.getElementById("blog_section").style.display = "none");
-      });
-    </script>
+/* --- Build top nav ---------------------------------------- */
+const topNav = document.getElementById('top-nav');
+NAV_TABS.forEach(tab => {
+  const btn = document.createElement('a');
+  btn.className = 'nav-tab';
+  btn.textContent = tab.label;
+  btn.href = tab.href || '#';
+  if (tab.href && tab.href !== '#') btn.target = '_blank';
+  topNav.appendChild(btn);
+});
 
-    <script>
-      const magicProjectsGrid = new MagicGrid({
-        container: "#work_section",
-        animate: false,
-        gutter: 30, // default gutter size
-        static: true,
-        useMin: false,
-        maxColumns: 2,
-        useTransform: true
-      });
+/* --- Build right mod tabs --------------------------------- */
+const modTabsEl = document.getElementById('mod-tabs');
+MODS.forEach((mod, i) => {
+  const tab = document.createElement('div');
+  tab.className = 'mod-tab' + (i === CONFIG.activeIndex ? ' active' : '');
+  tab.dataset.index = i;
+  tab.innerHTML = `<div class="mod-tab-inner">${mod.label}</div>`;
+  tab.addEventListener('click', () => switchMod(i));
+  modTabsEl.appendChild(tab);
+});
 
-      const magicForksGrid = new MagicGrid({
-        container: "#forks_section",
-        animate: false,
-        gutter: 30, // default gutter size
-        static: true,
-        useMin: false,
-        maxColumns: 2,
-        useTransform: true
-      });
+/* --- YouTube helper --------------------------------------- */
+function buildYTSrc(videoId) {
+  return `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&controls=0&disablekb=1&playsinline=1&rel=0&playlist=${videoId}&enablejsapi=1`;
+}
 
-      $("document").ready(() => {
-        magicProjectsGrid.listen();
-        magicForksGrid.listen();
-      });
-    </script>
-  
+/* --- Switch mod ------------------------------------------- */
+let currentIndex = CONFIG.activeIndex;
 
-</body></html>
+function switchMod(index) {
+  if (index === currentIndex) return;
+  const mod = MODS[index];
+  const title = document.getElementById('title');
+  const desc  = document.getElementById('description');
+  const btn   = document.getElementById('cta-btn');
+  const player = document.getElementById('yt-player');
+
+  // fade out
+  title.classList.add('fade-out');
+  desc.classList.add('fade-out');
+  btn.classList.add('fade-out');
+
+  setTimeout(() => {
+    // update content
+    updateContent(mod);
+
+    // swap video
+    player.src = buildYTSrc(mod.videoId);
+
+    // update active tab
+    document.querySelectorAll('.mod-tab').forEach((t, i) => {
+      t.classList.toggle('active', i === index);
+    });
+    currentIndex = index;
+
+    // fade in
+    title.classList.remove('fade-out');
+    desc.classList.remove('fade-out');
+    btn.classList.remove('fade-out');
+  }, 350);
+}
+
+function updateContent(mod) {
+  const title = document.getElementById('title');
+  const desc  = document.getElementById('description');
+  const btn   = document.getElementById('cta-btn');
+
+  title.textContent = mod.title;
+  desc.innerHTML    = mod.description.replace(/\n/g, '<br>');
+  btn.textContent   = mod.btnLabel;
+  btn.href          = mod.btnUrl;
+}
+
+/* --- Initial render --------------------------------------- */
+const initialMod = MODS[CONFIG.activeIndex];
+updateContent(initialMod);
+document.getElementById('yt-player').src = buildYTSrc(initialMod.videoId);
+</script>
+</body>
+</html>
