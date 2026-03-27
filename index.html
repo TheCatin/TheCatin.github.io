@@ -9,83 +9,58 @@
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;600&display=swap" rel="stylesheet" />
   <style>
     /* ============================================================
-       CSS VARIABLES — tweak these to restyle the whole site
+       CSS VARIABLES
     ============================================================ */
     :root {
-      --bg-overlay:   rgba(0, 0, 0, 0.45);   /* darkness over video */
-      --accent:       #f5c518;                /* yellow highlight */
-      --tab-bg:       rgba(30, 30, 30, 0.82);
-      --tab-hover-bg: rgba(50, 50, 50, 0.95);
-      --tab-active-bg:#222;
-      --tab-border:   3px solid var(--accent);
-      --btn-bg:       rgba(30, 30, 30, 0.88);
-      --btn-border:   3px solid #ccc;
-      --text-title:   #ffffff;
-      --text-body:    rgba(255,255,255,0.85);
-      --text-nav:     #ffffff;
-      --font-title:   'Bebas Neue', sans-serif;
-      --font-body:    'Barlow', sans-serif;
-      --tab-width:    200px;       /* collapsed width of right tabs */
-      --tab-pop:      60px;        /* how far they slide out on hover */
-      --transition:   0.35s cubic-bezier(.4,0,.2,1);
+      --bg-overlay:    rgba(0, 0, 0, 0.45);
+      --accent:        #f5c518;          /* yellow  — standalone mod tabs  */
+      --accent-cat:    #4a9eff;          /* blue    — category header tabs */
+      --tab-bg:        rgba(30, 30, 30, 0.82);
+      --tab-active-bg: #222;
+      --tab-border:    3px solid var(--accent);
+      --cat-border:    3px solid var(--accent-cat);
+      --btn-bg:        rgba(30, 30, 30, 0.88);
+      --btn-border:    3px solid #ccc;
+      --text-title:    #ffffff;
+      --text-body:     rgba(255,255,255,0.85);
+      --text-nav:      #ffffff;
+      --font-title:    'Bebas Neue', sans-serif;
+      --font-body:     'Barlow', sans-serif;
+      --tab-width:     200px;
+      --tab-pop:       60px;
+      --transition:    0.35s cubic-bezier(.4,0,.2,1);
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    html, body {
-      width: 100%; height: 100%;
-      overflow: hidden;
-      font-family: var(--font-body);
-      color: var(--text-body);
-    }
+    html, body { width: 100%; height: 100%; overflow: hidden; font-family: var(--font-body); color: var(--text-body); }
 
     /* ============================================================
        VIDEO BACKGROUND
     ============================================================ */
-    #bg-container {
-      position: fixed; inset: 0; z-index: 0;
-      overflow: hidden;
-      background: #111;
-    }
+    #bg-container { position: fixed; inset: 0; z-index: 0; overflow: hidden; background: #111; }
     #bg-container::after {
-      content: '';
-      position: absolute; inset: 0;
-      background: var(--bg-overlay);
-      pointer-events: none;
-      z-index: 1;
+      content: ''; position: absolute; inset: 0;
+      background: var(--bg-overlay); pointer-events: none; z-index: 1;
     }
     #yt-player {
-      position: absolute;
-      /* oversized so the 16:9 iframe fills any viewport */
-      top: 50%; left: 50%;
+      position: absolute; top: 50%; left: 50%;
       transform: translate(-50%, -50%);
-      width: 177.78vh;   /* 16/9 * 100vh */
-      height: 56.25vw;   /* 9/16 * 100vw */
-      min-width: 100%;
-      min-height: 100%;
+      width: 177.78vh; height: 56.25vw;
+      min-width: 100%; min-height: 100%;
       pointer-events: none;
     }
 
     /* ============================================================
        LAYOUT SHELL
     ============================================================ */
-    #app {
-      position: relative; z-index: 2;
-      width: 100%; height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
+    #app { position: relative; z-index: 2; width: 100%; height: 100vh; display: flex; flex-direction: column; }
 
     /* ============================================================
        TOP NAV
     ============================================================ */
     #top-nav {
-      width: 100%;
-      display: flex;
-      justify-content: space-evenly;
-      align-items: flex-start;
-      padding: 0 2vw;
-      flex-shrink: 0;
+      width: 100%; display: flex; justify-content: space-evenly;
+      align-items: flex-start; padding: 0 2vw; flex-shrink: 0;
     }
     .nav-tab {
       position: relative;
@@ -93,177 +68,163 @@
       color: var(--text-nav);
       font-family: var(--font-body);
       font-size: clamp(0.85rem, 1.4vw, 1.1rem);
-      font-weight: 600;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
+      font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
       padding: 10px 28px 12px;
-      cursor: pointer;
-      border: none; outline: none;
+      cursor: pointer; border: none; outline: none; text-decoration: none;
       clip-path: polygon(0 0, 100% 0, 92% 100%, 8% 100%);
       transition: background var(--transition), color var(--transition);
       white-space: nowrap;
     }
     .nav-tab::after {
-      content: '';
-      position: absolute; bottom: 0; left: 8%; right: 8%;
-      height: 2px;
-      background: var(--accent);
-      transform: scaleX(0);
-      transform-origin: center;
+      content: ''; position: absolute; bottom: 0; left: 8%; right: 8%;
+      height: 2px; background: var(--accent);
+      transform: scaleX(0); transform-origin: center;
       transition: transform var(--transition);
     }
-    .nav-tab:hover {
-      background: rgba(60, 60, 60, 0.92);
-      color: var(--accent);
-    }
+    .nav-tab:hover { background: rgba(60, 60, 60, 0.92); color: var(--accent); }
     .nav-tab:hover::after { transform: scaleX(1); }
 
     /* ============================================================
-       MAIN CONTENT AREA
+       MAIN AREA
     ============================================================ */
-    #main {
-      flex: 1;
-      display: flex;
-      align-items: stretch;
-      overflow: hidden;
-    }
+    #main { flex: 1; display: flex; align-items: stretch; overflow: hidden; }
 
-    /* Left content */
     #content {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
+      flex: 1; display: flex; flex-direction: column; justify-content: flex-end;
       padding: clamp(20px, 4vw, 60px) clamp(20px, 5vw, 80px);
-      padding-right: calc(var(--tab-width) + 20px); /* avoid overlap with right tabs */
+      padding-right: calc(var(--tab-width) + 20px);
     }
 
     #title {
       font-family: var(--font-title);
       font-size: clamp(2.5rem, 8vw, 7rem);
-      color: var(--text-title);
-      line-height: 0.95;
-      letter-spacing: 0.02em;
+      color: var(--text-title); line-height: 0.95; letter-spacing: 0.02em;
       text-shadow: 3px 3px 0 rgba(0,0,0,0.5), 6px 6px 0 rgba(0,0,0,0.2);
       transition: opacity 0.4s ease, transform 0.4s ease;
       margin-bottom: clamp(10px, 2vh, 20px);
     }
-
     #description {
-      font-size: clamp(0.8rem, 1.3vw, 1rem);
-      font-weight: 300;
-      line-height: 1.65;
-      max-width: 420px;
-      color: var(--text-body);
+      font-size: clamp(0.8rem, 1.3vw, 1rem); font-weight: 300; line-height: 1.65;
+      max-width: 420px; color: var(--text-body);
       text-shadow: 1px 1px 4px rgba(0,0,0,0.8);
       transition: opacity 0.4s ease;
       margin-bottom: clamp(16px, 3vh, 32px);
     }
 
-    #cta-btn {
+    /* ---- CTA BUTTONS (supports multiple) ---- */
+    #cta-buttons {
+      display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-start;
+      transition: opacity 0.4s ease;
+    }
+    .cta-btn {
       display: inline-block;
-      background: var(--btn-bg);
-      color: #fff;
+      background: var(--btn-bg); color: #fff;
       font-family: var(--font-title);
       font-size: clamp(1.2rem, 2.5vw, 1.8rem);
-      letter-spacing: 0.08em;
-      padding: 12px 36px;
+      letter-spacing: 0.08em; padding: 12px 36px;
       border: var(--btn-border);
-      cursor: pointer;
-      text-decoration: none;
+      cursor: pointer; text-decoration: none;
       transition: background var(--transition), border-color var(--transition),
                   color var(--transition), transform 0.15s ease;
-      align-self: flex-start;
       clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
     }
-    #cta-btn:hover {
+    .cta-btn:hover {
       background: rgba(245, 197, 24, 0.2);
-      border-color: var(--accent);
-      color: var(--accent);
+      border-color: var(--accent); color: var(--accent);
       transform: translateX(4px);
     }
 
     /* ============================================================
-       RIGHT MOD TABS
+       RIGHT TABS — shared base
     ============================================================ */
     #mod-tabs {
-      position: absolute;
-      right: 0; top: 50%;
-      transform: translateY(-50%);
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      gap: 8px;
-      padding: 10px 0;
+      position: absolute; right: 0; top: 50%; transform: translateY(-50%);
+      display: flex; flex-direction: column; align-items: flex-end;
+      gap: 8px; padding: 10px 0;
     }
 
     .mod-tab {
-      position: relative;
       width: calc(var(--tab-width) + var(--tab-pop));
-      transform: translateX(var(--tab-pop));   /* mostly hidden off-screen right */
-      transition: transform var(--transition), background var(--transition);
+      transform: translateX(var(--tab-pop));
+      transition: transform var(--transition);
       cursor: pointer;
     }
     .mod-tab:hover,
-    .mod-tab.active {
+    .mod-tab.active,
+    .mod-tab.cat-open {
       transform: translateX(0);
     }
     .mod-tab-inner {
-      background: var(--tab-bg);
-      color: #fff;
+      background: var(--tab-bg); color: #fff;
       font-family: var(--font-body);
       font-size: clamp(0.8rem, 1.2vw, 0.95rem);
-      font-weight: 600;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
+      font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
       padding: 12px 20px 12px 28px;
       border-left: var(--tab-border);
       clip-path: polygon(12px 0, 100% 0, 100% 100%, 0 100%);
       transition: background var(--transition), color var(--transition);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
-    .mod-tab:hover .mod-tab-inner,
-    .mod-tab.active .mod-tab-inner {
-      background: var(--tab-active-bg);
-      color: var(--accent);
+
+    /* Standalone + child — yellow */
+    .mod-tab:not(.cat-tab):hover .mod-tab-inner,
+    .mod-tab:not(.cat-tab).active .mod-tab-inner {
+      background: var(--tab-active-bg); color: var(--accent);
     }
-    /* little arrow indicator on active */
-    .mod-tab.active .mod-tab-inner::before {
-      content: '▶ ';
-      color: var(--accent);
+    .mod-tab:not(.cat-tab).active .mod-tab-inner::before {
+      content: '▶ '; color: var(--accent);
+    }
+
+    /* ---- CATEGORY HEADER TAB — blue ---- */
+    .cat-tab .mod-tab-inner { border-left: var(--cat-border); }
+    .cat-tab:hover .mod-tab-inner,
+    .cat-tab.cat-open .mod-tab-inner {
+      background: var(--tab-active-bg); color: var(--accent-cat);
+    }
+    /* Direction arrows on category tabs */
+    .cat-tab .mod-tab-inner::before { content: '▶ '; color: var(--accent-cat); }
+    .cat-tab.cat-open .mod-tab-inner::before { content: '▼ '; color: var(--accent-cat); }
+
+    /* ---- CATEGORY WRAPPER + CHILDREN ---- */
+    .cat-wrapper {
+      width: calc(var(--tab-width) + var(--tab-pop));
+      display: flex; flex-direction: column; align-items: flex-end;
+    }
+    .cat-children {
+      width: 100%;
+      max-height: 0; overflow: hidden;
+      transition: max-height 0.4s cubic-bezier(.4,0,.2,1),
+                  padding-top 0.4s cubic-bezier(.4,0,.2,1);
+      display: flex; flex-direction: column; gap: 6px;
+    }
+    .cat-children.open { max-height: 800px; padding-top: 4px; }
+
+    /* Child mod tabs — slightly smaller + extra indent */
+    .child-mod-tab .mod-tab-inner {
+      padding-left: 36px;
+      font-size: clamp(0.72rem, 1.05vw, 0.85rem);
     }
 
     /* ============================================================
-       CONTENT TRANSITION HELPER
+       FADE TRANSITION
     ============================================================ */
-    .fade-out { opacity: 0; transform: translateY(8px); }
-    .fade-in  { opacity: 1; transform: translateY(0); }
+    .fade-out { opacity: 0 !important; transform: translateY(8px) !important; }
 
     /* ============================================================
-       RESPONSIVE ADJUSTMENTS
+       RESPONSIVE
     ============================================================ */
     @media (max-width: 700px) {
-      :root {
-        --tab-width: 150px;
-        --tab-pop:   40px;
-      }
+      :root { --tab-width: 150px; --tab-pop: 40px; }
       #content { padding-right: calc(var(--tab-width) + 10px); }
       .nav-tab { padding: 8px 14px 10px; font-size: 0.75rem; }
+      #cta-buttons { gap: 8px; }
     }
   </style>
 </head>
 <body>
 
-<!-- ============================/*
-
-
-
-
-
-
-
+<!-- ============================================================
+/*
 ||||||||||||||||(((((|||||||||||************||||********************************
 ||||||||||||||||||||||||||||||||************************************************
 |(|||||||||||||||||||||||||||||||||*********************************************
@@ -307,75 +268,180 @@
 ********,,,,*&@&&@&&&&&@&@&&&&&&&&&&&&&&&&&&&&%#&&&&&&,,,.......................
 ***********|@@@@@&&&&&&&&@&@&%&&@%%&&&&&&&@&&&&&%&&&&&&,........................
 **********(@&@@@&&&&&&&&&&&&&|&&&@@&&%&&&%&&&&&&&&&&&&&&,,,.....................
-
-
-
-
-*/================================
+*/
 ============================================================ -->
 <script>
-/* ----------------------------------------------------------------
-   TOP NAV TABS
-   Add objects to add more buttons.
-   { label: "Name", href: "url or #" }
----------------------------------------------------------------- */
+/* ---- TOP NAV TABS ----------------------------------------
+   Add { label, href } objects for more nav buttons.
+----------------------------------------------------------- */
 const NAV_TABS = [
-  { label: "Projects", href: "#" },
+  { label: "Projects",    href: "#" },
   { label: "Photography", href: "pages/photography.html" },
-  { label: "Others", href: "#" },
+  { label: "Others",      href: "#" },
 ];
 
-/* ----------------------------------------------------------------
-   MOD ENTRIES
-   Each mod changes the whole page when clicked.
-   activeIndex: which mod is shown on load (0 = first).
+/* ---- RIGHT TABS (mods + categories) ---------------------
 
-   Fields:
-     label       — name shown on the right tab
-     videoId     — YouTube video ID for the background
-     title       — big title text
-     description — body text (supports \n for line breaks)
-     btnLabel    — text on the CTA button
-     btnUrl      — URL the CTA button links to
----------------------------------------------------------------- */
-const MODS = [
+   Two entry types:
+
+   STANDALONE MOD  (type: "mod")
+   ──────────────────────────────────────────────────────────
+   {
+     type:        "mod",
+     label:       "Tab text",
+     videoId:     "YouTubeID",
+     title:       "Big title",
+     description: "Body text. Use \n for line breaks.",
+     buttons: [
+       { label: "Button 1", url: "https://..." },
+       { label: "Button 2", url: "https://..." },   // add as many as you like
+     ]
+   }
+
+   CATEGORY  (type: "category")  — blue tab, expands to show mods
+   ──────────────────────────────────────────────────────────
+   {
+     type:  "category",
+     label: "Category Name",
+     mods: [
+       { label, videoId, title, description, buttons: [...] },
+       // ← add more mods here
+     ]
+   }
+
+   Clicking a category auto-selects its first mod.
+   Clicking a different category collapses the previous one.
+----------------------------------------------------------- */
+const RIGHT_TABS = [
   {
-    label: "PT Multiplayer Mod",
-    videoId: "DC9HtXHADHA",   // ← replace with your YouTube video ID
-    title: "Pizza Tower Multiplayer",
-    description: "#1 most downloaded Pizza Tower mod in 2023 \n(It's first and most popular year on the market)\n\nIt's obsolete now, just wanted to flex it again.",
-    btnLabel: "Mod Page",
-    btnUrl: "https://gamebanana.com/mods/429709",
+    type:        "mod",
+    label:       "PT Multiplayer Mod",
+    videoId:     "DC9HtXHADHA",
+    title:       "Pizza Tower Multiplayer",
+    description: "#1 most downloaded Pizza Tower mod in 2023\n(Its first and most popular year on the market)\n\nIt's obsolete now, just wanted to flex it again.",
+    buttons: [
+      { label: "Mod Page", url: "https://gamebanana.com/mods/429709" },
+    ]
   },
   {
-    label: "Slurpzon Balatro",
-    videoId: "6HpY1oKgFIo",   // ← replace
-    title: "Slurpzon Balatro",
-    description: "Inside joke(r)s that you will never understand.\n 22 more jokers and counting.\n\nDo you dare play poker with Slurpzon?",
-    btnLabel: "Mod Page",
-    btnUrl: "https://thecatin.github.io/SlurpzonBalatroMod/",
+    type:        "mod",
+    label:       "Slurpzon Balatro",
+    videoId:     "6HpY1oKgFIo",
+    title:       "Slurpzon Balatro",
+    description: "Inside joke(r)s that you will never understand.\n22 more jokers and counting.\n\nDo you dare play poker with Slurpzon?",
+    buttons: [
+      { label: "Mod Page", url: "https://thecatin.github.io/SlurpzonBalatroMod/" },
+    ]
   },
   {
-    label: "DrGBase Reeker",
-    videoId: "lf4M5sN6VcY",   // ← replace
-    title: "DrGBase Reeker",
-    description: "A reeker from the Scape and Run: Parasites mod,\nnow in Garry's Mod. It even comes in a pale flavor.\n\nWith no eyes it still sees you.",
-    btnLabel: "Mod Page",
-    btnUrl: "https://steamcommunity.com/sharedfiles/filedetails/?id=2836777289",
+    type:  "category",
+    label: "Garry's Mod",
+    mods: [
+      {
+        label:       "DrGBase Reeker",
+        videoId:     "lf4M5sN6VcY",
+        title:       "DrGBase Reeker",
+        description: "A reeker from the Scape and Run: Parasites mod,\nnow in Garry's Mod. It even comes in a pale flavor.\n\nWith no eyes it still sees you.",
+        buttons: [
+          { label: "Workshop Page", url: "https://steamcommunity.com/sharedfiles/filedetails/?id=2836777289" },
+        ]
+      },
+      // ← add more Garry's Mod mods here
+    ]
   },
   {
-    label: "Skywire Stage",
-    videoId: "KVWMaoLwzd0",   // ← replace
-    title: "Skywire Stage",
-    description: "A Rivals Of Aether stage based off of Skywire 2\nGet ready to kick some ass in this deadly amusement park.\n\nCan you catch the references in the beans?",
-    btnLabel: "Mod Page",
-    btnUrl: "https://steamcommunity.com/sharedfiles/filedetails/?id=2709502270",
+    type:  "category",
+    label: "Rivals of Aether",
+    mods: [
+      {
+        label:       "Skywire Stage",
+        videoId:     "KVWMaoLwzd0",
+        title:       "Skywire Stage",
+        description: "A Rivals Of Aether stage based on of Skywire 2.\nGet ready to kick some ass in this deadly amusement park.\n\nCan you catch the references in the beans?",
+        buttons: [
+          { label: "Workshop Page",      url: "https://steamcommunity.com/sharedfiles/filedetails/?id=2709502270" },
+        ]
+      },
+            {
+        label:       "Parasite Fortress",
+        videoId:     "KVWMaoLwzd0",
+        title:       "Parasite Fortress Stage",
+        description: "A Rivals Of Aether stage based on our yearly Scape and Run modpack.\nGet ready to kick some ass on penis island.\n\nCan you catch other mod references?",
+        buttons: [
+          { label: "Day Version",      url: "https://steamcommunity.com/sharedfiles/filedetails/?id=2690238261" },
+          { label: "Night Version", url: "https://steamcommunity.com/sharedfiles/filedetails/?id=2690243122" },  // ← update this URL
+        ]
+      },
+	        {
+        label:       "Boneworks Tower",
+        videoId:     "KVWMaoLwzd0",
+        title:       "Boneworks Tower Stage",
+        description: "A Rivals Of Aether stage based on 'Tower' from Boneworks.\nGet ready to kick some ass in MythOS city.\n\nOnly drink UltraMersion.",
+        buttons: [
+          { label: "Workshop Page",      url: "https://steamcommunity.com/sharedfiles/filedetails/?id=2687502037" },
+        ]
+      },
+	              {
+        label:       "Piltover Bridge",
+        videoId:     "KVWMaoLwzd0",
+        title:       "Piltover Bridge Stage",
+        description: "A Rivals Of Aether stage based on Piltover Bridge from Arcane/League of Legends.\nGet ready to kick some ass like Ekko.\n\nI'm beating the odds! Rising to every occasion as if I defeated the gods!",
+        buttons: [
+          { label: "Day Version",      url: "https://steamcommunity.com/sharedfiles/filedetails/?id=2701348930" },
+          { label: "Night Version", url: "https://steamcommunity.com/sharedfiles/filedetails/?id=2760986981" },  // ← update this URL
+        ]
+      },
+    ]
+  },
+    {
+    type:  "category",
+    label: "Rivals of Aether II",
+    mods: [
+      {
+        label:       "Fleet mod 1",
+        videoId:     "lf4M5sN6VcY",
+        title:       "DrGBase Reeker",
+        description: "A reeker from the Scape and Run: Parasites mod,\nnow in Garry's Mod. It even comes in a pale flavor.\n\nWith no eyes it still sees you.",
+        buttons: [
+          { label: "Workshop Page", url: "https://steamcommunity.com/sharedfiles/filedetails/?id=2836777289" },
+        ]
+      },
+            {
+        label:       "Fleet mod 2",
+        videoId:     "lf4M5sN6VcY",
+        title:       "DrGBase Reeker",
+        description: "A reeker from the Scape and Run: Parasites mod,\nnow in Garry's Mod. It even comes in a pale flavor.\n\nWith no eyes it still sees you.",
+        buttons: [
+          { label: "Workshop Page", url: "https://steamcommunity.com/sharedfiles/filedetails/?id=2836777289" },
+        ]
+      },
+	        {
+        label:       "Fleet mod 3",
+        videoId:     "lf4M5sN6VcY",
+        title:       "DrGBase Reeker",
+        description: "A reeker from the Scape and Run: Parasites mod,\nnow in Garry's Mod. It even comes in a pale flavor.\n\nWith no eyes it still sees you.",
+        buttons: [
+          { label: "Workshop Page", url: "https://steamcommunity.com/sharedfiles/filedetails/?id=2836777289" },
+        ]
+      },
+	        {
+        label:       "you get the idea",
+        videoId:     "lf4M5sN6VcY",
+        title:       "DrGBase Reeker",
+        description: "A reeker from the Scape and Run: Parasites mod,\nnow in Garry's Mod. It even comes in a pale flavor.\n\nWith no eyes it still sees you.",
+        buttons: [
+          { label: "Workshop Page", url: "https://steamcommunity.com/sharedfiles/filedetails/?id=2836777289" },
+        ]
+      },
+    ]
   },
 ];
 
 const CONFIG = {
-  activeIndex: 1,    // which mod tab is active on load
-  siteTitle: "The King of Slurpzon",   // browser tab title
+  // Which mod to show on page load.
+  // Must exactly match a "label" field somewhere in RIGHT_TABS.
+  defaultMod: "Slurpzon Balatro",
+  siteTitle:  "The King of Slurpzon",
 };
 </script>
 <!-- ============================================================
@@ -384,117 +450,195 @@ const CONFIG = {
 
 <!-- VIDEO BACKGROUND -->
 <div id="bg-container">
-  <iframe
-    id="yt-player"
-    frameborder="0"
-    allow="autoplay; encrypted-media"
-    allowfullscreen
-  ></iframe>
+  <iframe id="yt-player" frameborder="0"
+    allow="autoplay; encrypted-media" allowfullscreen></iframe>
 </div>
 
-<!-- APP SHELL -->
+<!-- APP -->
 <div id="app">
-  <!-- TOP NAV -->
   <nav id="top-nav"></nav>
-
-  <!-- MAIN -->
   <div id="main" style="position:relative;">
-    <!-- LEFT CONTENT -->
     <div id="content">
       <h1 id="title"></h1>
       <p  id="description"></p>
-      <a  id="cta-btn" href="#" target="_blank" rel="noopener"></a>
+      <div id="cta-buttons"></div>
     </div>
-
-    <!-- RIGHT MOD TABS -->
     <div id="mod-tabs"></div>
   </div>
 </div>
+
 <script>
 /* ============================================================
-   BOOTSTRAP
+   STATE
 ============================================================ */
-document.title = CONFIG.siteTitle;
+let currentMod      = null;
+let openCatChildren = null;   // .cat-children el currently expanded
+let openCatTab      = null;   // .cat-tab el currently open
 
-/* --- Build top nav ---------------------------------------- */
-const topNav = document.getElementById('top-nav');
-NAV_TABS.forEach(tab => {
-  const btn = document.createElement('a');
-  btn.className = 'nav-tab';
-  btn.textContent = tab.label;
-  btn.href = tab.href || '#';
-  if (tab.href && tab.href !== '#') btn.target = '_blank';
-  topNav.appendChild(btn);
-});
-
-/* --- Build right mod tabs --------------------------------- */
-const modTabsEl = document.getElementById('mod-tabs');
-MODS.forEach((mod, i) => {
-  const tab = document.createElement('div');
-  tab.className = 'mod-tab' + (i === CONFIG.activeIndex ? ' active' : '');
-  tab.dataset.index = i;
-  tab.innerHTML = `<div class="mod-tab-inner">${mod.label}</div>`;
-  tab.addEventListener('click', () => switchMod(i));
-  modTabsEl.appendChild(tab);
-});
-
-/* --- YouTube helper --------------------------------------- */
-function buildYTSrc(videoId) {
-  return `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&controls=0&disablekb=1&playsinline=1&rel=0&playlist=${videoId}&enablejsapi=1`;
+/* ============================================================
+   HELPERS
+============================================================ */
+function buildYTSrc(id) {
+  return `https://www.youtube.com/embed/${id}?autoplay=1&mute=1&loop=1&controls=0&disablekb=1&playsinline=1&rel=0&playlist=${id}&enablejsapi=1`;
 }
 
-/* --- Switch mod ------------------------------------------- */
-let currentIndex = CONFIG.activeIndex;
+function renderButtons(mod) {
+  const container = document.getElementById('cta-buttons');
+  container.innerHTML = '';
+  (mod.buttons || []).forEach(btn => {
+    const a = document.createElement('a');
+    a.className   = 'cta-btn';
+    a.textContent = btn.label;
+    a.href        = btn.url;
+    a.target      = '_blank';
+    a.rel         = 'noopener';
+    container.appendChild(a);
+  });
+}
 
-function switchMod(index) {
-  if (index === currentIndex) return;
-  const mod = MODS[index];
-  const title = document.getElementById('title');
-  const desc  = document.getElementById('description');
-  const btn   = document.getElementById('cta-btn');
-  const player = document.getElementById('yt-player');
+/* ============================================================
+   SELECT MOD
+============================================================ */
+function selectMod(mod, tabEl) {
+  const titleEl = document.getElementById('title');
+  const descEl  = document.getElementById('description');
+  const btnsEl  = document.getElementById('cta-buttons');
 
-  // fade out
-  title.classList.add('fade-out');
-  desc.classList.add('fade-out');
-  btn.classList.add('fade-out');
+  titleEl.classList.add('fade-out');
+  descEl.classList.add('fade-out');
+  btnsEl.classList.add('fade-out');
+
+  // Clear active on all non-category tabs, mark new one
+  document.querySelectorAll('.mod-tab:not(.cat-tab)').forEach(t => t.classList.remove('active'));
+  if (tabEl) tabEl.classList.add('active');
 
   setTimeout(() => {
-    // update content
-    updateContent(mod);
+    titleEl.textContent  = mod.title;
+    descEl.innerHTML     = mod.description.replace(/\n/g, '<br>');
+    renderButtons(mod);
+    document.getElementById('yt-player').src = buildYTSrc(mod.videoId);
+    currentMod = mod;
 
-    // swap video
-    player.src = buildYTSrc(mod.videoId);
-
-    // update active tab
-    document.querySelectorAll('.mod-tab').forEach((t, i) => {
-      t.classList.toggle('active', i === index);
-    });
-    currentIndex = index;
-
-    // fade in
-    title.classList.remove('fade-out');
-    desc.classList.remove('fade-out');
-    btn.classList.remove('fade-out');
+    titleEl.classList.remove('fade-out');
+    descEl.classList.remove('fade-out');
+    btnsEl.classList.remove('fade-out');
   }, 350);
 }
 
-function updateContent(mod) {
-  const title = document.getElementById('title');
-  const desc  = document.getElementById('description');
-  const btn   = document.getElementById('cta-btn');
-
-  title.textContent = mod.title;
-  desc.innerHTML    = mod.description.replace(/\n/g, '<br>');
-  btn.textContent   = mod.btnLabel;
-  btn.href          = mod.btnUrl;
+/* ============================================================
+   CATEGORY OPEN / CLOSE
+============================================================ */
+function closeOpenCategory() {
+  if (openCatChildren) {
+    openCatChildren.classList.remove('open');
+    openCatTab.classList.remove('cat-open');
+    openCatChildren = null;
+    openCatTab      = null;
+  }
 }
 
-/* --- Initial render --------------------------------------- */
-const initialMod = MODS[CONFIG.activeIndex];
-updateContent(initialMod);
-document.getElementById('yt-player').src = buildYTSrc(initialMod.videoId);
+function openCategory(catEntry, childrenEl, catTabEl) {
+  if (openCatChildren && openCatChildren !== childrenEl) closeOpenCategory();
+  childrenEl.classList.add('open');
+  catTabEl.classList.add('cat-open');
+  openCatChildren = childrenEl;
+  openCatTab      = catTabEl;
+  // Auto-select first mod
+  const firstChildTab = childrenEl.querySelector('.child-mod-tab');
+  selectMod(catEntry.mods[0], firstChildTab);
+}
+
+/* ============================================================
+   BUILD TOP NAV
+============================================================ */
+const topNavEl = document.getElementById('top-nav');
+NAV_TABS.forEach(t => {
+  const a = document.createElement('a');
+  a.className   = 'nav-tab';
+  a.textContent = t.label;
+  a.href        = t.href || '#';
+  if (t.href && t.href !== '#') a.target = '_blank';
+  topNavEl.appendChild(a);
+});
+
+/* ============================================================
+   BUILD RIGHT TABS + REGISTRY
+============================================================ */
+// registry[label] = { mod, tabEl, type, childrenEl?, catTabEl? }
+const registry      = {};
+const tabsContainer = document.getElementById('mod-tabs');
+
+RIGHT_TABS.forEach(entry => {
+  if (entry.type === 'mod') {
+    const tab = document.createElement('div');
+    tab.className = 'mod-tab';
+    tab.innerHTML = `<div class="mod-tab-inner">${entry.label}</div>`;
+    tab.addEventListener('click', () => {
+      closeOpenCategory();
+      selectMod(entry, tab);
+    });
+    tabsContainer.appendChild(tab);
+    registry[entry.label] = { mod: entry, tabEl: tab, type: 'standalone' };
+
+  } else if (entry.type === 'category') {
+    const wrapper  = document.createElement('div');
+    wrapper.className = 'cat-wrapper';
+
+    const catTab   = document.createElement('div');
+    catTab.className = 'mod-tab cat-tab';
+    catTab.innerHTML = `<div class="mod-tab-inner">${entry.label}</div>`;
+
+    const children = document.createElement('div');
+    children.className = 'cat-children';
+
+    entry.mods.forEach(mod => {
+      const childTab = document.createElement('div');
+      childTab.className = 'mod-tab child-mod-tab';
+      childTab.innerHTML = `<div class="mod-tab-inner">${mod.label}</div>`;
+      childTab.addEventListener('click', () => selectMod(mod, childTab));
+      children.appendChild(childTab);
+      registry[mod.label] = { mod, tabEl: childTab, type: 'category', childrenEl: children, catTabEl: catTab };
+    });
+
+    catTab.addEventListener('click', () => {
+      if (children.classList.contains('open')) {
+        closeOpenCategory();
+      } else {
+        openCategory(entry, children, catTab);
+      }
+    });
+
+    wrapper.appendChild(catTab);
+    wrapper.appendChild(children);
+    tabsContainer.appendChild(wrapper);
+  }
+});
+
+/* ============================================================
+   INITIAL RENDER
+============================================================ */
+(function init() {
+  document.title = CONFIG.siteTitle;
+  const target = registry[CONFIG.defaultMod];
+  if (!target) {
+    console.warn(`[Config] defaultMod "${CONFIG.defaultMod}" not found — check label spelling.`);
+    return;
+  }
+  // If default mod is inside a category, open it
+  if (target.type === 'category') {
+    target.childrenEl.classList.add('open');
+    target.catTabEl.classList.add('cat-open');
+    openCatChildren = target.childrenEl;
+    openCatTab      = target.catTabEl;
+  }
+  target.tabEl.classList.add('active');
+  const mod = target.mod;
+  document.getElementById('title').textContent     = mod.title;
+  document.getElementById('description').innerHTML = mod.description.replace(/\n/g, '<br>');
+  renderButtons(mod);
+  document.getElementById('yt-player').src = buildYTSrc(mod.videoId);
+  currentMod = mod;
+})();
 </script>
 </body>
 </html>
-
