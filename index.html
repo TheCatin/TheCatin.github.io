@@ -13,8 +13,8 @@
     ============================================================ */
     :root {
       --bg-overlay:    rgba(0, 0, 0, 0.45);
-      --accent:        #f5c518;          /* yellow  — standalone mod tabs  */
-      --accent-cat:    #4a9eff;          /* blue    — category header tabs */
+      --accent:        #f5c518;
+      --accent-cat:    #4a9eff;
       --tab-bg:        rgba(30, 30, 30, 0.82);
       --tab-active-bg: #222;
       --tab-border:    3px solid var(--accent);
@@ -111,10 +111,18 @@
       margin-bottom: clamp(16px, 3vh, 32px);
     }
 
-    /* ---- CTA BUTTONS (supports multiple) ---- */
-    #cta-buttons {
-      display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-start;
+    /* ---- BOTTOM ROW: buttons + optional award ---- */
+    #bottom-row {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      flex-wrap: wrap;
       transition: opacity 0.4s ease;
+    }
+
+    /* CTA BUTTONS */
+    #cta-buttons {
+      display: flex; gap: 12px; flex-wrap: wrap; align-items: center;
     }
     .cta-btn {
       display: inline-block;
@@ -133,6 +141,50 @@
       border-color: var(--accent); color: var(--accent);
       transform: translateX(4px);
     }
+
+    /* ---- AWARD IMAGE ---- */
+    #award-wrap {
+      display: flex;
+      align-items: center;
+      opacity: 0;
+      transform: translateX(-6px);
+      transition: opacity 0.4s ease 0.1s, transform 0.4s ease 0.1s;
+      pointer-events: none;
+    }
+    #award-wrap.visible {
+      opacity: 1;
+      transform: translateX(0);
+      pointer-events: auto;
+    }
+    #award-img {
+      height: clamp(52px, 7vh, 90px);   /* scale with viewport height */
+      width: auto;
+      display: block;
+      filter: drop-shadow(0 2px 8px rgba(0,0,0,0.7));
+      transition: transform 0.2s ease, filter 0.2s ease;
+    }
+    #award-img:hover {
+      transform: scale(1.08) rotate(-2deg);
+      filter: drop-shadow(0 4px 14px rgba(245,197,24,0.5));
+    }
+    /* tooltip on hover (uses title attribute, but we also style a pseudo) */
+    #award-wrap[data-tip]:hover::after {
+      content: attr(data-tip);
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 0;
+      background: rgba(20,20,20,0.92);
+      color: var(--accent);
+      font-family: var(--font-body);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding: 5px 10px;
+      white-space: nowrap;
+      pointer-events: none;
+    }
+    #award-wrap { position: relative; }
 
     /* ============================================================
        RIGHT TABS — shared base
@@ -166,7 +218,6 @@
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
 
-    /* Standalone + child — yellow */
     .mod-tab:not(.cat-tab):hover .mod-tab-inner,
     .mod-tab:not(.cat-tab).active .mod-tab-inner {
       background: var(--tab-active-bg); color: var(--accent);
@@ -181,7 +232,6 @@
     .cat-tab.cat-open .mod-tab-inner {
       background: var(--tab-active-bg); color: var(--accent-cat);
     }
-    /* Direction arrows on category tabs */
     .cat-tab .mod-tab-inner::before { content: '▶ '; color: var(--accent-cat); }
     .cat-tab.cat-open .mod-tab-inner::before { content: '▼ '; color: var(--accent-cat); }
 
@@ -199,7 +249,6 @@
     }
     .cat-children.open { max-height: 800px; padding-top: 4px; }
 
-    /* Child mod tabs — slightly smaller + extra indent */
     .child-mod-tab .mod-tab-inner {
       padding-left: 36px;
       font-size: clamp(0.72rem, 1.05vw, 0.85rem);
@@ -218,6 +267,7 @@
       #content { padding-right: calc(var(--tab-width) + 10px); }
       .nav-tab { padding: 8px 14px 10px; font-size: 0.75rem; }
       #cta-buttons { gap: 8px; }
+      #award-img { height: clamp(40px, 6vh, 60px); }
     }
   </style>
 </head>
@@ -295,7 +345,12 @@ const NAV_TABS = [
      buttons: [
        { label: "Button 1", url: "https://..." },
        { label: "Button 2", url: "https://..." },   // add as many as you like
-     ]
+     ],
+     award: {                     // ← OPTIONAL: image shown next to the buttons
+       src: "images/fpma.png",    //   path to the image file
+       tip: "Tooltip text",       //   text shown on hover (optional)
+       url: "https://..."         //   clicking the image links here (optional)
+     }
    }
 
    CATEGORY  (type: "category")  — blue tab, expands to show mods
@@ -304,8 +359,8 @@ const NAV_TABS = [
      type:  "category",
      label: "Category Name",
      mods: [
-       { label, videoId, title, description, buttons: [...] },
-       // ← add more mods here
+       { label, videoId, title, description, buttons: [...], award: {...} },
+       // ← add more mods here; award is always optional
      ]
    }
 
@@ -321,7 +376,11 @@ const RIGHT_TABS = [
     description: "#1 most downloaded Pizza Tower mod in 2023\n(Its first and most popular year on the market)\n\nIt's obsolete now, just wanted to flex it again.",
     buttons: [
       { label: "Mod Page", url: "https://gamebanana.com/mods/429709" },
-    ]
+    ],
+    award: {
+      src: "images/fpma.png",
+      tip: "Front Page Mod Award",
+    }
   },
   {
     type:        "mod",
@@ -333,7 +392,7 @@ const RIGHT_TABS = [
       { label: "Mod Page", url: "https://thecatin.github.io/SlurpzonBalatroMod/" },
     ]
   },
-    {
+  {
     type:        "mod",
     label:       "Slurpzon Minecraft",
     videoId:     "mHrRLWxpLC8",
@@ -351,7 +410,11 @@ const RIGHT_TABS = [
         description: "A reeker from the Scape and Run: Parasites mod,\nnow in Garry's Mod. It even comes in a pale flavor.\n\nWith no eyes it still sees you.",
         buttons: [
           { label: "Workshop Page", url: "https://steamcommunity.com/sharedfiles/filedetails/?id=2836777289" },
-        ]
+        ],
+    award: {
+      src: "images/fpma.png",
+      tip: "Front Page Mod Award",
+    }
       },
       {
         label:       "Slurpzon Charms",
@@ -362,7 +425,7 @@ const RIGHT_TABS = [
           { label: "Workshop Page", url: "https://steamcommunity.com/sharedfiles/filedetails/?id=2832558102" },
         ]
       },
-	        {
+      {
         label:       "Morgan NPC and PM",
         videoId:     "lf4M5sN6VcY",
         title:       "Morgan NPC and PM",
@@ -371,13 +434,13 @@ const RIGHT_TABS = [
           { label: "Workshop Page", url: "https://steamcommunity.com/sharedfiles/filedetails/?id=2832558102" },
         ]
       },
-	        {
+      {
         label:       "Lurker Nextbots",
         videoId:     "lf4M5sN6VcY",
         title:       "Lurker Nextbots",
         description: 'Decend into maddness while running from... Trent?\nIf you hear him, it`s already too late.\n\nI made this before it was cool.',
         buttons: [
-          { label: "Lurker", url: "https://steamcommunity.com/sharedfiles/filedetails/?id=2720985049" },
+          { label: "Lurker",         url: "https://steamcommunity.com/sharedfiles/filedetails/?id=2720985049" },
           { label: "Lurker Stage 4", url: "https://steamcommunity.com/sharedfiles/filedetails/?id=2720989749" },
         ]
       },
@@ -393,41 +456,45 @@ const RIGHT_TABS = [
         title:       "Skywire Stage",
         description: "A Rivals Of Aether stage based on of Skywire 2.\nGet ready to kick some ass in this deadly amusement park.\n\nCan you catch the references in the beans?",
         buttons: [
-          { label: "Workshop Page",      url: "https://steamcommunity.com/sharedfiles/filedetails/?id=2709502270" },
-        ]
+          { label: "Workshop Page", url: "https://steamcommunity.com/sharedfiles/filedetails/?id=2709502270" },
+        ],
+	  award: {
+      src: "images/fpma.png",
+      tip: "Front Page Mod Award",
+    }
       },
-            {
+      {
         label:       "Parasite Fortress",
         videoId:     "UAmhoqRpgpg",
         title:       "Parasite Fortress Stage",
         description: "A Rivals Of Aether stage based on our yearly Scape and Run modpack.\nGet ready to kick some ass on penis island.\n\nCan you catch other mod references?",
         buttons: [
-          { label: "Day Version",      url: "https://steamcommunity.com/sharedfiles/filedetails/?id=2690238261" },
-          { label: "Night Version", url: "https://steamcommunity.com/sharedfiles/filedetails/?id=2690243122" },  // ← update this URL
+          { label: "Day Version",   url: "https://steamcommunity.com/sharedfiles/filedetails/?id=2690238261" },
+          { label: "Night Version", url: "https://steamcommunity.com/sharedfiles/filedetails/?id=2690243122" },
         ]
       },
-	        {
+      {
         label:       "Boneworks Tower",
         videoId:     "HiXb_S0gSoU",
         title:       "Boneworks Tower Stage",
         description: "A Rivals Of Aether stage based on 'Tower' from Boneworks.\nGet ready to kick some ass in MythOS city.\n\nOnly drink UltraMersion.",
         buttons: [
-          { label: "Workshop Page",      url: "https://steamcommunity.com/sharedfiles/filedetails/?id=2687502037" },
+          { label: "Workshop Page", url: "https://steamcommunity.com/sharedfiles/filedetails/?id=2687502037" },
         ]
       },
-	              {
+      {
         label:       "Piltover Bridge",
         videoId:     "gpginxhLylY",
         title:       "Piltover Bridge Stage",
         description: "A Rivals Of Aether stage based on Piltover Bridge from Arcane/League of Legends.\nGet ready to kick some ass like Ekko.\n\nI'm beating the odds! Rising to every occasion as if I defeated the gods!",
         buttons: [
-          { label: "Day Version",      url: "https://steamcommunity.com/sharedfiles/filedetails/?id=2701348930" },
-          { label: "Night Version", url: "https://steamcommunity.com/sharedfiles/filedetails/?id=2760986981" },  // ← update this URL
+          { label: "Day Version",   url: "https://steamcommunity.com/sharedfiles/filedetails/?id=2701348930" },
+          { label: "Night Version", url: "https://steamcommunity.com/sharedfiles/filedetails/?id=2760986981" },
         ]
       },
     ]
   },
-    {
+  {
     type:  "category",
     label: "Rivals of Aether II",
     mods: [
@@ -438,9 +505,13 @@ const RIGHT_TABS = [
         description: "Skin edit for the badger pricness fleet skin.\nSimply removes the badger out of the equation.\n\nMy aim is royally true.",
         buttons: [
           { label: "Mod Page", url: "https://gamebanana.com/mods/627112" },
-        ]
+        ],
+      award: {
+      src: "images/fpma.png",
+      tip: "Front Page Mod Award",
+    }
       },
-            {
+      {
         label:       "Night Owl Glasses",
         videoId:     "JFLF33r-5p8",
         title:       "Night Owl Glasses",
@@ -449,10 +520,9 @@ const RIGHT_TABS = [
           { label: "Mod Page", url: "https://gamebanana.com/mods/628386" },
         ]
       },
-
     ]
   },
-      {
+  {
     type:  "category",
     label: "Bonelab",
     mods: [
@@ -463,15 +533,19 @@ const RIGHT_TABS = [
         description: 'Fusion deathmatch map based on Pizza Tower.\nLocate the secret treasure.\n\n"Fire" - BaBaCorp',
         buttons: [
           { label: "Mod Page", url: "https://mod.io/g/bonelab/m/dm-top-of-the-pizza-tower-fusion-support#description" },
-        ]
+        ],
+	  award: {
+      src: "images/fpma.png",
+      tip: "Front Page Mod Award",
+    }
       },
-            {
+      {
         label:       "Safety Steve",
         videoId:     "kHJXRE1Z2Aw",
         title:       "Safety Steve",
         description: "Safety Steve from Hall of the Machine King, now in bonelab\nObsolete now, but lives on in the funcitonal alt in UrikaTractor's mod\n\nWhat are you? Some kind of machine king?",
       },
-            {
+      {
         label:       "Morgan Avatar",
         videoId:     "5G4pvtHlrdw",
         title:       "Morgan Avatar",
@@ -482,8 +556,6 @@ const RIGHT_TABS = [
 ];
 
 const CONFIG = {
-  // Which mod to show on page load.
-  // Must exactly match a "label" field somewhere in RIGHT_TABS.
   defaultMod: "Slurpzon Balatro",
   siteTitle:  "The King of Slurpzon",
 };
@@ -505,7 +577,12 @@ const CONFIG = {
     <div id="content">
       <h1 id="title"></h1>
       <p  id="description"></p>
-      <div id="cta-buttons"></div>
+      <div id="bottom-row">
+        <div id="cta-buttons"></div>
+        <div id="award-wrap">
+          <!-- award image injected here by JS -->
+        </div>
+      </div>
     </div>
     <div id="mod-tabs"></div>
   </div>
@@ -516,8 +593,8 @@ const CONFIG = {
    STATE
 ============================================================ */
 let currentMod      = null;
-let openCatChildren = null;   // .cat-children el currently expanded
-let openCatTab      = null;   // .cat-tab el currently open
+let openCatChildren = null;
+let openCatTab      = null;
 
 /* ============================================================
    HELPERS
@@ -540,32 +617,64 @@ function renderButtons(mod) {
   });
 }
 
+function renderAward(mod) {
+  const wrap = document.getElementById('award-wrap');
+  wrap.innerHTML = '';
+  wrap.removeAttribute('data-tip');
+  wrap.classList.remove('visible');
+
+  if (!mod.award) return;
+
+  const a = mod.award;
+  const img = document.createElement('img');
+  img.id  = 'award-img';
+  img.src = a.src;
+  img.alt = a.tip || 'Award';
+
+  if (a.tip)  wrap.setAttribute('data-tip', a.tip);
+
+  if (a.url) {
+    const link = document.createElement('a');
+    link.href   = a.url;
+    link.target = '_blank';
+    link.rel    = 'noopener';
+    link.appendChild(img);
+    wrap.appendChild(link);
+  } else {
+    wrap.appendChild(img);
+  }
+
+  // tiny delay so the CSS transition fires after the element is in the DOM
+  requestAnimationFrame(() => wrap.classList.add('visible'));
+}
+
 /* ============================================================
    SELECT MOD
 ============================================================ */
 function selectMod(mod, tabEl) {
-  const titleEl = document.getElementById('title');
-  const descEl  = document.getElementById('description');
-  const btnsEl  = document.getElementById('cta-buttons');
+  const titleEl  = document.getElementById('title');
+  const descEl   = document.getElementById('description');
+  const btnsEl   = document.getElementById('cta-buttons');
+  const bottomEl = document.getElementById('bottom-row');
 
   titleEl.classList.add('fade-out');
   descEl.classList.add('fade-out');
-  btnsEl.classList.add('fade-out');
+  bottomEl.classList.add('fade-out');
 
-  // Clear active on all non-category tabs, mark new one
   document.querySelectorAll('.mod-tab:not(.cat-tab)').forEach(t => t.classList.remove('active'));
   if (tabEl) tabEl.classList.add('active');
 
   setTimeout(() => {
     titleEl.textContent  = mod.title;
-    descEl.innerHTML     = mod.description.replace(/\n/g, '<br>');
+    descEl.innerHTML     = mod.description ? mod.description.replace(/\n/g, '<br>') : '';
     renderButtons(mod);
+    renderAward(mod);
     document.getElementById('yt-player').src = buildYTSrc(mod.videoId);
     currentMod = mod;
 
     titleEl.classList.remove('fade-out');
     descEl.classList.remove('fade-out');
-    btnsEl.classList.remove('fade-out');
+    bottomEl.classList.remove('fade-out');
   }, 350);
 }
 
@@ -587,7 +696,6 @@ function openCategory(catEntry, childrenEl, catTabEl) {
   catTabEl.classList.add('cat-open');
   openCatChildren = childrenEl;
   openCatTab      = catTabEl;
-  // Auto-select first mod
   const firstChildTab = childrenEl.querySelector('.child-mod-tab');
   selectMod(catEntry.mods[0], firstChildTab);
 }
@@ -608,7 +716,6 @@ NAV_TABS.forEach(t => {
 /* ============================================================
    BUILD RIGHT TABS + REGISTRY
 ============================================================ */
-// registry[label] = { mod, tabEl, type, childrenEl?, catTabEl? }
 const registry      = {};
 const tabsContainer = document.getElementById('mod-tabs');
 
@@ -668,7 +775,6 @@ RIGHT_TABS.forEach(entry => {
     console.warn(`[Config] defaultMod "${CONFIG.defaultMod}" not found — check label spelling.`);
     return;
   }
-  // If default mod is inside a category, open it
   if (target.type === 'category') {
     target.childrenEl.classList.add('open');
     target.catTabEl.classList.add('cat-open');
@@ -678,8 +784,9 @@ RIGHT_TABS.forEach(entry => {
   target.tabEl.classList.add('active');
   const mod = target.mod;
   document.getElementById('title').textContent     = mod.title;
-  document.getElementById('description').innerHTML = mod.description.replace(/\n/g, '<br>');
+  document.getElementById('description').innerHTML = mod.description ? mod.description.replace(/\n/g, '<br>') : '';
   renderButtons(mod);
+  renderAward(mod);
   document.getElementById('yt-player').src = buildYTSrc(mod.videoId);
   currentMod = mod;
 })();
